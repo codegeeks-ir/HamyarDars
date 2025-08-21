@@ -1,9 +1,7 @@
 // app/page.tsx
 import Link from "next/link";
-import { Lalezar } from "next/font/google";
 import majorsData from "@/data/majors.json";
-
-const lalezar = Lalezar({ weight: "400", subsets: ["latin", "arabic"] });
+import { lalezar } from "@/utils/fonts";
 
 export default function HomePage() {
   return (
@@ -27,7 +25,7 @@ export default function HomePage() {
               href={`/${major.slug}`}
               className="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition-all duration-200 hover:border-blue-300"
             >
-              <div className="text-center">
+              <div className="text-center flex flex-col justify-between h-full">
                 <div className="text-4xl mb-4">🎓</div>
                 <h2
                   className={`text-xl font-bold text-gray-800 mb-2 ${lalezar.className}`}
@@ -35,7 +33,7 @@ export default function HomePage() {
                   {major.name}
                 </h2>
                 <p className="text-gray-600 text-sm">{major.description}</p>
-                <div className="mt-4 bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full inline-block">
+                <div className="mt-4 bg-blue-100 text-blue-800 text-xs font-medium p-3 rounded-full inline-block">
                   مشاهده دروس
                 </div>
               </div>

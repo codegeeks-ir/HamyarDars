@@ -252,10 +252,10 @@ const CourseManager = ({ majorInfo }: CourseManagerProps) => {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-xl shadow-md p-6 mb-8 border border-gray-100">
-          <div className="flex justify-between items-start mb-4">
+          <div className="flex justify-between items-start mb-4 flex-col md:flex-row">
             <Link
               href="/"
-              className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2"
+              className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 text-sm"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -273,20 +273,20 @@ const CourseManager = ({ majorInfo }: CourseManagerProps) => {
               </svg>
               بازگشت
             </Link>
-            <div className="text-center flex-1">
+            <div className="text-center flex-1 w-full mt-5">
               <h1
                 className={
                   "text-3xl font-bold text-gray-800 mb-2 " + lalezar.className
                 }
               >
-                📚 همیار دروس − {majorInfo.name}
+                📚 همیار درس دانشگاه صنعتی ارومیه
               </h1>
               <p className="text-gray-600">{majorInfo.description}</p>
             </div>
-            <div className="w-24"></div> {/* برای حفظ تعادل布局 */}
+            <div className="w-24"></div> {/* برای حفظ تعادل */}
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-4">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-7">
             <label
               className={
                 "bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg cursor-pointer transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2 " +

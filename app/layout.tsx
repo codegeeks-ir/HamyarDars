@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
 
 import "./globals.css";
-import { Rubik } from "next/font/google";
+import { rubik } from "@/utils/fonts";
 
-const rubik = Rubik({
-  subsets: ["arabic", "latin"],
-});
 export const metadata: Metadata = {
   title: "همیار درس",
   description: "ابزاری برای بررسی دروس پاس شده و باقی مانده",
