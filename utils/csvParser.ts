@@ -71,10 +71,15 @@ export const parseCSV = (csvText: string): CourseGroup[] => {
 
       if (columnIndex + 2 < columns.length) {
         const name = columns[columnIndex]?.trim();
-        const code = columns[columnIndex + 1]?.trim();
+        let code = columns[columnIndex + 1]?.trim();
         const unitsStr = columns[columnIndex + 2]?.trim();
 
-        if (!name || name === "" || !code || code === "") continue;
+        if (!name || name === "") continue;
+
+        // اگر کد درس خالی است، از "-" استفاده کنید
+        if (!code || code === "") {
+          code = "-";
+        }
 
         // تبدیل واحد به عدد (حذف کاراکترهای غیر عددی)
         const cleanUnitsStr =

@@ -1,8 +1,13 @@
 // utils/transcriptParser.ts
-export const parseTranscriptHTML = (htmlText: string): string[] => {
+export interface TranscriptCourse {
+  code: string;
+  name: string;
+}
+
+export const parseTranscriptHTML = (htmlText: string): TranscriptCourse[] => {
   const parser = new DOMParser();
   const doc = parser.parseFromString(htmlText, "text/html");
-  const passedCourses: string[] = [];
+  const passedCourses: TranscriptCourse[] = [];
 
   // یافتن تمامی جداول مربوط به ترم‌ها
   const termTables = doc.querySelectorAll('div[id^="tab"] table');
@@ -14,17 +19,19 @@ export const parseTranscriptHTML = (htmlText: string): string[] => {
       const cells = row.querySelectorAll("td");
       if (cells.length >= 5) {
         const codeCell = cells[0];
+        const nameCell = cells[1];
         const statusCell = cells[4];
 
         if (
           codeCell &&
+          nameCell &&
           statusCell &&
           statusCell.textContent?.includes("قبول")
         ) {
-          const code = codeCell.textContent?.trim();
-          if (code) {
-            passedCourses.push(code);
-          }
+          const code = codeCell.textContent?.trim() || "-";
+          const name = nameCell.textContent?.trim() || "نامعلوم";
+
+          passedCourses.push({ code, name });
         }
       }
     });

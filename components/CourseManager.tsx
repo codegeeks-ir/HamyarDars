@@ -3,8 +3,12 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { CourseGroup, parseCSV } from "@/utils/csvParser";
-import { parseTranscriptHTML } from "@/utils/transcriptParser";
+import {
+  parseTranscriptHTML,
+  TranscriptCourse,
+} from "@/utils/transcriptParser";
 import { Lalezar } from "next/font/google";
+import Link from "next/link";
 
 const lalezar = Lalezar({ weight: "400", subsets: ["latin", "arabic"] });
 
@@ -25,6 +29,10 @@ const CourseManager = ({ majorInfo }: CourseManagerProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string | null>(null);
+  const [unmatchedCourses, setUnmatchedCourses] = useState<TranscriptCourse[]>(
+    []
+  );
+  const [showUnmatchedModal, setShowUnmatchedModal] = useState(false);
 
   // بارگذاری داده‌های CSV بر اساس رشته
   useEffect(() => {
@@ -109,11 +117,31 @@ const CourseManager = ({ majorInfo }: CourseManagerProps) => {
           const content = e.target?.result as string;
           const passedCourses = parseTranscriptHTML(content);
 
+          // ایجاد مجموعه‌ای از کدهای تمام دروس موجود
+          const allCourseCodes = new Set();
+          groups.forEach((group) => {
+            group.courses.forEach((course) => {
+              allCourseCodes.add(course.code);
+            });
+          });
+
+          // یافتن دروسی که در کارنامه هستند اما در CSV وجود ندارند
+          const unmatched = passedCourses.filter(
+            (course) => !allCourseCodes.has(course.code)
+          );
+
+          setUnmatchedCourses(unmatched);
+          if (unmatched.length > 0) {
+            setShowUnmatchedModal(true);
+          }
+
           setGroups((prevGroups) => {
             return prevGroups.map((group) => {
               const updatedCourses = group.courses.map((course) => ({
                 ...course,
-                passed: passedCourses.includes(course.code),
+                passed:
+                  passedCourses.some((pc) => pc.code === course.code) ||
+                  course.passed,
               }));
 
               const passedUnits = updatedCourses
@@ -137,7 +165,7 @@ const CourseManager = ({ majorInfo }: CourseManagerProps) => {
 
       reader.readAsText(file);
     },
-    []
+    [groups]
   );
 
   // تغییر وضعیت قبولی یک درس
@@ -224,19 +252,41 @@ const CourseManager = ({ majorInfo }: CourseManagerProps) => {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-xl shadow-md p-6 mb-8 border border-gray-100">
-          <h1
-            className={
-              "text-3xl font-bold text-gray-800 text-center mb-2 " +
-              lalezar.className
-            }
-          >
-            📚 همیار درس دانشگاه صنعتی ارومیه
-          </h1>
-          <p className="text-gray-600 text-center mb-6">
-            {majorInfo.description}
-          </p>
+          <div className="flex justify-between items-start mb-4">
+            <Link
+              href="/"
+              className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+              بازگشت
+            </Link>
+            <div className="text-center flex-1">
+              <h1
+                className={
+                  "text-3xl font-bold text-gray-800 mb-2 " + lalezar.className
+                }
+              >
+                📚 همیار دروس − {majorInfo.name}
+              </h1>
+              <p className="text-gray-600">{majorInfo.description}</p>
+            </div>
+            <div className="w-24"></div> {/* برای حفظ تعادل布局 */}
+          </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-4">
             <label
               className={
                 "bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg cursor-pointer transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2 " +
@@ -337,6 +387,53 @@ const CourseManager = ({ majorInfo }: CourseManagerProps) => {
             &nbsp;مراجعه کرده و صفحه را در قالب html ذخیره کنید.
           </p>
         </div>
+
+        {/* مودال برای نمایش دروس تطبیق داده نشده */}
+        {showUnmatchedModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+              <h2 className="text-xl font-bold mb-4 text-center">
+                دروس تطبیق داده نشده
+              </h2>
+              <p className="mb-4 text-gray-700">
+                {unmatchedCourses.length} درس در کارنامه شما یافت شد که در لیست
+                دروس این رشته موجود نیستند. لطفاً این دروس را به صورت دستی بررسی
+                کنید.
+              </p>
+
+              <div className="border rounded-lg overflow-hidden">
+                <table className="w-full text-right">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <th className="p-3 border-b">کد درس</th>
+                      <th className="p-3 border-b">نام درس</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {unmatchedCourses.map((course, index) => (
+                      <tr
+                        key={index}
+                        className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                      >
+                        <td className="p-3 border-b">{course.code}</td>
+                        <td className="p-3 border-b">{course.name}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="mt-6 flex justify-center">
+                <button
+                  onClick={() => setShowUnmatchedModal(false)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
+                >
+                  فهمیدم
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Mobile Group Selector (only shows on small screens) */}
         <div className="lg:hidden mb-6">
