@@ -1,0 +1,16 @@
+[
+  {
+    "slug": "software",
+    "name": "مهندسی کامپیوتر - نرم افزار",
+    "csvFile": "ce-software.csv",
+    "guidePdf": "guide-computer.pdf",
+    "description": "رشته مهندسی کامپیوتر با گرایش نرم افزار"
+  },
+  {
+    "slug": "ai",
+    "name": "مهندسی کامپیوتر − هوش مصنوعی",
+    "csvFile": "ce-ai.csv",
+    "guidePdf": "guide-computer.pdf",
+    "description": "رشته مهندسی کامپیوتر با گرایش هوش مصنوعی"
+  }
+]

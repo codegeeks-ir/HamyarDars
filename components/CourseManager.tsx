@@ -8,17 +8,29 @@ import { Lalezar } from "next/font/google";
 
 const lalezar = Lalezar({ weight: "400", subsets: ["latin", "arabic"] });
 
-const CourseManager = () => {
+interface MajorInfo {
+  slug: string;
+  name: string;
+  csvFile: string;
+  guidePdf: string;
+  description: string;
+}
+
+interface CourseManagerProps {
+  majorInfo: MajorInfo;
+}
+
+const CourseManager = ({ majorInfo }: CourseManagerProps) => {
   const [groups, setGroups] = useState<CourseGroup[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string | null>(null);
 
-  // بارگذاری داده‌های CSV
+  // بارگذاری داده‌های CSV بر اساس رشته
   useEffect(() => {
     const loadCSVData = async () => {
       try {
-        const response = await fetch("/ce-software.csv");
+        const response = await fetch(`/${majorInfo.csvFile}`);
         const csvText = await response.text();
         let courseData = parseCSV(csvText);
 
@@ -30,8 +42,9 @@ const CourseManager = () => {
             .reduce((sum, course) => sum + course.units, 0),
         }));
 
-        // بازیابی وضعیت ذخیره شده
-        const savedData = localStorage.getItem("courseProgress");
+        // بازیابی وضعیت ذخیره شده با کلید مخصوص رشته
+        const storageKey = `courseProgress-${majorInfo.slug}`;
+        const savedData = localStorage.getItem(storageKey);
         if (savedData) {
           try {
             const savedState: CourseGroup[] = JSON.parse(savedData);
@@ -74,14 +87,15 @@ const CourseManager = () => {
     };
 
     loadCSVData();
-  }, []);
+  }, [majorInfo.csvFile, majorInfo.slug]);
 
-  // ذخیره وضعیت در localStorage
+  // ذخیره وضعیت در localStorage با کلید مخصوص رشته
   useEffect(() => {
     if (groups.length > 0) {
-      localStorage.setItem("courseProgress", JSON.stringify(groups));
+      const storageKey = `courseProgress-${majorInfo.slug}`;
+      localStorage.setItem(storageKey, JSON.stringify(groups));
     }
-  }, [groups]);
+  }, [groups, majorInfo.slug]);
 
   // پردازش فایل کارنامه
   const handleFileUpload = useCallback(
@@ -216,11 +230,12 @@ const CourseManager = () => {
               lalezar.className
             }
           >
-            📚 همیار دروس − کامپیوتر نرم‌افزار
+            📚 همیار درس دانشگاه صنعتی ارومیه
           </h1>
           <p className="text-gray-600 text-center mb-6">
-            برنامه‌ای برای بررسی پیشرفت تحصیلی دانشگاه صنعتی ارومیه
+            {majorInfo.description}
           </p>
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <label
               className={
@@ -274,7 +289,34 @@ const CourseManager = () => {
               </svg>
               بازنشانی همه دروس
             </button>
+
+            {/* دکمه دانلود راهنما */}
+            <a
+              href={majorInfo.guidePdf}
+              download
+              className={
+                "bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2 " +
+                lalezar.className
+              }
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              دانلود راهنمای رشته
+            </a>
           </div>
+
           <p className="text-gray-500 text-center mt-4 text-sm">
             برای دریافت کارنامه ابتدا وارد&nbsp;
             <a
