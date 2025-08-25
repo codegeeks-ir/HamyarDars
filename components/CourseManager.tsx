@@ -398,7 +398,7 @@ const CourseManager = ({ majorInfo }: CourseManagerProps) => {
               <p className="mb-4 text-gray-700">
                 {unmatchedCourses.length} درس در کارنامه شما یافت شد که در لیست
                 دروس این رشته موجود نیستند. لطفاً این دروس را به صورت دستی بررسی
-                کنید.
+                کنید و در صورت وجود دروس معادل آن‌ها را انتخاب کنید.
               </p>
 
               <div className="border rounded-lg overflow-hidden">
