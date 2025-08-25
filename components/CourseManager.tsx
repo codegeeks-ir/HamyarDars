@@ -9,6 +9,7 @@ import {
 } from "@/utils/transcriptParser";
 import { Lalezar } from "next/font/google";
 import Link from "next/link";
+import Footer from "./Footer";
 
 const lalezar = Lalezar({ weight: "400", subsets: ["latin", "arabic"] });
 
@@ -657,28 +658,7 @@ const CourseManager = ({ majorInfo }: CourseManagerProps) => {
           </div>
         )}
 
-        {/* Footer */}
-        <div className="mt-12 text-center text-gray-500 text-sm">
-          <p>
-            همیار درس − برنامه نویسی شده توسط&nbsp;
-            <a
-              href="http://mohsenfaraj.ir"
-              target="_blank"
-              className="text-blue-500"
-            >
-              محسن فرج‌اللهی
-            </a>
-          </p>
-          <p>
-            <a
-              href="https://codegeeks.ir"
-              target="_blank"
-              className="text-blue-500"
-            >
-              انجمن علمی مهندسی کامپیوتر دانشگاه صنعتی ارومیه
-            </a>
-          </p>
-        </div>
+        <Footer />
       </div>
     </div>
   );

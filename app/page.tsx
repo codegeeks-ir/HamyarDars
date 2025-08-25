@@ -2,6 +2,7 @@
 import Link from "next/link";
 import majorsData from "@/data/majors.json";
 import { lalezar } from "@/utils/fonts";
+import Footer from "@/components/Footer";
 
 export default function HomePage() {
   return (
@@ -41,9 +42,7 @@ export default function HomePage() {
           ))}
         </div>
 
-        <div className="mt-12 text-center text-gray-500 text-sm">
-          <p>همیار درس − برنامه نویسی شده توسط محسن فرج‌اللهی</p>
-        </div>
+        <Footer />
       </div>
     </div>
   );
